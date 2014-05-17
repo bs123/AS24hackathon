@@ -1,14 +1,9 @@
 package angrycars.engine;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.event.ListSelectionEvent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,12 +21,26 @@ public class VehicleDataReader {
 		List<Entry> result = new ArrayList<Entry>();
 		for (int i = 0; i < len; i++) {
 			JSONObject obj = json.getJSONObject(i);
+			if (obj.isNull("recorded_at") || obj.isNull("latitude") || obj.isNull("longitude")) {
+				continue;
+			}
+			String timestamp = obj.getString("recorded_at");
+			double lat = obj.getDouble("latitude");
+			double longitude = obj.getDouble("longitude");
+			result.add(new Entry(lat, longitude));
 		}
 		return result;
 	}
     
 	public static class Entry {
-		
+
+		public final double latitude;
+		public final double longitude;
+
+		public Entry(double lat, double longitude) {
+			this.latitude = lat;
+			this.longitude = longitude;
+		}
 	}
 	
 	private static final String PATH = "C:/Users/gintas/Documents/AS24hackathon/inputs/car1.json";
@@ -41,8 +50,7 @@ public class VehicleDataReader {
 		VehicleDataReader r = new VehicleDataReader(data);
 		List<Entry> result = r.parse();
 		System.err.println(result.size());
-//		FileInputStream jsonFile = new FileInputStream();
-//	    new BufferedInputStream(jsonFile).r
-//		jsonFile.
+		System.err.println(result.get(5).latitude);
+		System.err.println(result.get(5).longitude);
     }
 }
