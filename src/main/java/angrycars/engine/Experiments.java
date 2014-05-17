@@ -8,7 +8,6 @@ import angrycars.engine.VehicleDataReader.Entry;
 
 public class Experiments {
 
-	
 	private static final String PATH = "C:/Users/gintas/Documents/AS24hackathon/inputs/car1.json";
 	private static final String PATH2 = "C:/Users/gintas/Documents/AS24hackathon/inputs/car4.json";
 	
