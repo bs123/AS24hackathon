@@ -1,7 +1,5 @@
 package angrycars.engine;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,9 +69,9 @@ public class VehicleDataReader {
 		for (Entry entry : entries) {
 			GridPoint p = new GridPoint();
 			double y = (entry.latitude - bounds.minY) / yCellSize;
-			p.y =(int) Math.round(y);
+			p.y =(int) Math.floor(y);
 			double x = (entry.longitude - bounds.minX) / xCellSize;
-			p.x = (int) Math.round(x);
+			p.x = (int) Math.floor(x);
 			result.add(p);
 		}
 		return result;
@@ -89,18 +87,4 @@ public class VehicleDataReader {
 			this.longitude = longitude;
 		}
 	}
-	
-	private static final String PATH = "C:/Users/gintas/Documents/AS24hackathon/inputs/car1.json";
-	
-	public static void main(String[] args) throws Exception {
-		String data = new String(Files.readAllBytes(Paths.get(PATH)));
-		VehicleDataReader r = new VehicleDataReader(data);
-		List<Entry> entries = r.parse();
-		Rectangle bounds = r.findBounds(entries);
-		System.err.println(bounds.minX + " " + bounds.minY + " " + bounds.maxX + " " + bounds.maxY);
-		List<GridPoint> normalizedEntries = normalize(entries, bounds, 50, 50);
-		for (int i = 0; i < normalizedEntries.size(); i++) {
-			System.err.println(normalizedEntries.get(i).y + " " + normalizedEntries.get(i).x);
-		}
-    }
 }

@@ -5,22 +5,12 @@ import java.util.Random;
 public class Engine {
 	
 	private static final double TIME_TO_SPREAD = 2.0;
-	private static final int MAX_X = 10;
-	private static final int MAX_Y = 10;
-	private static final double SPREAD_PROBABILITY = 0.3;
+	private static final int MAX_X = 51;
+	private static final int MAX_Y = 51;
+	private static final double SPREAD_PROBABILITY = 0.1;
 	private static final double DECAY_PROBABILITY = 0.05;
 	
 	Cell[][] grid = new Cell[MAX_Y][MAX_X];
-	
-	public static void main(String[] args) {
-		Engine e = new Engine();
-		e.insertPoint(3, 5, 1);
-		e.insertPoint(8, 3, 2);
-		for (int i = 0; i < 5; i++) {
-			e.step(0);
-			System.out.println(e);
-		}
-	}
 	
 	public Engine() {
 		for (int y = 0; y < MAX_Y; y++) {
