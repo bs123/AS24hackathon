@@ -3,6 +3,7 @@ package angrycars.engine;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -29,6 +30,7 @@ public class VehicleDataReader {
 			double longitude = obj.getDouble("longitude");
 			result.add(new Entry(lat, longitude));
 		}
+		Collections.reverse(result);
 		return result;
 	}
     
@@ -50,7 +52,7 @@ public class VehicleDataReader {
 		VehicleDataReader r = new VehicleDataReader(data);
 		List<Entry> result = r.parse();
 		System.err.println(result.size());
-		System.err.println(result.get(5).latitude);
-		System.err.println(result.get(5).longitude);
+		System.err.println(result.get(0).latitude);
+		System.err.println(result.get(0).longitude);
     }
 }
