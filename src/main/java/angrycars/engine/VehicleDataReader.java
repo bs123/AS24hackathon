@@ -25,6 +25,7 @@ public class VehicleDataReader {
 			if (obj.isNull("recorded_at") || obj.isNull("latitude") || obj.isNull("longitude")) {
 				continue;
 			}
+			// TODO: parse timestamp properly
 			String timestamp = obj.getString("recorded_at");
 			double lat = obj.getDouble("latitude");
 			double longitude = obj.getDouble("longitude");
@@ -33,7 +34,51 @@ public class VehicleDataReader {
 		Collections.reverse(result);
 		return result;
 	}
-    
+	
+	public static Rectangle findBounds(Iterable<Entry> entries) { 
+		Rectangle r = new Rectangle();
+		r.minX = Double.MAX_VALUE;
+		r.minY = Double.MAX_VALUE;
+		r.maxX = Double.MIN_VALUE;
+		r.maxY = Double.MIN_VALUE;
+		
+		for (Entry entry : entries) {
+			double y = entry.latitude;
+			double x = entry.longitude;
+			if (y > r.maxY) r.maxY = y;
+			if (x > r.maxX) r.maxX = x;
+			if (y < r.minY) r.minY = y;
+			if (x < r.minX) r.minX = x;
+		}
+		return r;
+	}
+	
+	public static List<GridPoint> normalize(Iterable<Entry> entries, Rectangle bounds,
+			int ny, int nx) {
+		double yRange = bounds.maxY - bounds.minY;
+		double xRange = bounds.maxX - bounds.minX;
+		
+		double yCellSize = yRange / ny;
+		double xCellSize = xRange / nx;
+		
+		if (yCellSize > xCellSize) {
+			xCellSize = yCellSize;
+		} else {
+			yCellSize = xCellSize;
+		}
+	
+		List<GridPoint> result = new ArrayList<GridPoint>();
+		for (Entry entry : entries) {
+			GridPoint p = new GridPoint();
+			double y = (entry.latitude - bounds.minY) / yCellSize;
+			p.y =(int) Math.round(y);
+			double x = (entry.longitude - bounds.minX) / xCellSize;
+			p.x = (int) Math.round(x);
+			result.add(p);
+		}
+		return result;
+	}
+
 	public static class Entry {
 
 		public final double latitude;
@@ -50,9 +95,12 @@ public class VehicleDataReader {
 	public static void main(String[] args) throws Exception {
 		String data = new String(Files.readAllBytes(Paths.get(PATH)));
 		VehicleDataReader r = new VehicleDataReader(data);
-		List<Entry> result = r.parse();
-		System.err.println(result.size());
-		System.err.println(result.get(0).latitude);
-		System.err.println(result.get(0).longitude);
+		List<Entry> entries = r.parse();
+		Rectangle bounds = r.findBounds(entries);
+		System.err.println(bounds.minX + " " + bounds.minY + " " + bounds.maxX + " " + bounds.maxY);
+		List<GridPoint> normalizedEntries = normalize(entries, bounds, 50, 50);
+		for (int i = 0; i < normalizedEntries.size(); i++) {
+			System.err.println(normalizedEntries.get(i).y + " " + normalizedEntries.get(i).x);
+		}
     }
 }
